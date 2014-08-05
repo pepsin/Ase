@@ -58,6 +58,12 @@ var Template = function(template_name, data, mother_wrapper) {
   return node.firstChild;
 };
 
+var DynamicBind = function(node, event_pack) {
+  Object.keys(event_pack).map(function(selector) {
+    Select(selector, node).bind(event_pack[selector].event, event_pack[selector].func);
+  });
+}
+
 NodeList.prototype.bind = function(event_name, func) {
   var nodes = this;
   for (var i = 0; i < nodes.length; i++) {
@@ -65,7 +71,7 @@ NodeList.prototype.bind = function(event_name, func) {
       nodes[i].addEventListener(event_name, func);//["on" + event_name] = func;
     }
   };
-  return this;
+  return nodes;
 };
 
 NodeList.prototype.map = function(func) {
@@ -147,12 +153,6 @@ Array.prototype.shuffle = function() {
     t = arr[m], arr[m] = arr[i], arr[i] = t;
   }
   return arr;
-}
-
-var DynamicBind = function(node, event_pack) {
-  Object.keys(event_pack).map(function(selector) {
-    Select(selector, node).bind(event_pack[selector].event, event_pack[selector].func);
-  });
 }
 
 //var StopBubble = function(event) {
