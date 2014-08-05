@@ -1,0 +1,1 @@
+var TEMPLATES = {item:function(data){return "<li>	<div class='view'>		<input class='toggle' type='checkbox'>		<label>"+data.value+"</label>		<button class='destroy'></button>	</div>	<input class='edit' value='"+data.value+"'></li>";}};

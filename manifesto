@@ -1,0 +1,5 @@
+@app.js
+    public/tmp/templates.js
+    src/js/framework.js
+    src/js/main.js
+    
