@@ -60,7 +60,9 @@ var Template = function(template_name, data, mother_wrapper) {
 
 var DynamicBind = function(node, event_pack) {
   Object.keys(event_pack).map(function(selector) {
-    Select(selector, node).bind(event_pack[selector].event, event_pack[selector].func);
+    Select(selector, node).bind(event_pack[selector].event, function(e) {
+      event_pack[selector].func(node, this, e);
+    });
   });
 }
 
@@ -153,6 +155,19 @@ Array.prototype.shuffle = function() {
     t = arr[m], arr[m] = arr[i], arr[i] = t;
   }
   return arr;
+}
+
+Array.prototype.flatten = function() {
+  var self = this;
+  var flattened_arr = [];
+  for (var i = 0; i < self.length; i++) {
+    if (Array.isArray(self[i])) {
+      flattened_arr = flattened_arr.concat(self[i].flatten());
+    } else {
+      flattened_arr.push(self[i]);
+    }
+  }
+  return flattened_arr;
 }
 
 //var StopBubble = function(event) {

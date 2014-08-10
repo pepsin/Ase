@@ -44,9 +44,8 @@ var countNodeChange = function(number, isAdd) {
   }
 }
 
-var toggleItem = function(node, is_checked) {
-  Select("input", node)[0].checked = is_checked;
-  if (is_checked) {
+var toggleItem = function(node, target, e) {
+  if (target.checked) {
     node.className = "completed";
     countNodeChange(-1);
   } else {
@@ -55,20 +54,18 @@ var toggleItem = function(node, is_checked) {
   }
 }
 
+var destroyItem = function(node, target, e) {
+  node.parentElement.removeChild(node);
+  countNodeChange(-1);
+}
+
 var newItem = function(data) {
   var node = Template("item", data);
-  
-  var destroyItem = function() {
-    node.parentElement.removeChild(node);
-    countNodeChange(-1);
-  }
   
   DynamicBind(node, {
     ".toggle": {
       event: "click",
-      func: function(e) {
-        toggleItem(node, e.target.checked);
-      }
+      func: toggleItem
     },
     ".destroy": {
       event: "click",
@@ -77,3 +74,4 @@ var newItem = function(data) {
   });
   return node;
 }
+

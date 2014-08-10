@@ -60,6 +60,14 @@ var Template = function(template_name, data, mother_wrapper) {
   return node.firstChild;
 };
 
+var DynamicBind = function(node, event_pack) {
+  Object.keys(event_pack).map(function(selector) {
+    Select(selector, node).bind(event_pack[selector].event, function(e) {
+      event_pack[selector].func(node, this, e);
+    });
+  });
+}
+
 NodeList.prototype.bind = function(event_name, func) {
   var nodes = this;
   for (var i = 0; i < nodes.length; i++) {
@@ -67,7 +75,7 @@ NodeList.prototype.bind = function(event_name, func) {
       nodes[i].addEventListener(event_name, func);//["on" + event_name] = func;
     }
   };
-  return this;
+  return nodes;
 };
 
 NodeList.prototype.map = function(func) {
@@ -151,10 +159,17 @@ Array.prototype.shuffle = function() {
   return arr;
 }
 
-var DynamicBind = function(node, event_pack) {
-  Object.keys(event_pack).map(function(selector) {
-    Select(selector, node).bind(event_pack[selector].event, event_pack[selector].func);
-  });
+Array.prototype.flatten = function() {
+  var self = this;
+  var flattened_arr = [];
+  for (var i = 0; i < self.length; i++) {
+    if (Array.isArray(self[i])) {
+      flattened_arr = flattened_arr.concat(self[i].flatten());
+    } else {
+      flattened_arr.push(self[i]);
+    }
+  }
+  return flattened_arr;
 }
 
 //var StopBubble = function(event) {
@@ -221,9 +236,8 @@ var countNodeChange = function(number, isAdd) {
   }
 }
 
-var toggleItem = function(node, is_checked) {
-  Select("input", node)[0].checked = is_checked;
-  if (is_checked) {
+var toggleItem = function(node, target, e) {
+  if (target.checked) {
     node.className = "completed";
     countNodeChange(-1);
   } else {
@@ -232,20 +246,18 @@ var toggleItem = function(node, is_checked) {
   }
 }
 
+var destroyItem = function(node, target, e) {
+  node.parentElement.removeChild(node);
+  countNodeChange(-1);
+}
+
 var newItem = function(data) {
   var node = Template("item", data);
-  
-  var destroyItem = function() {
-    node.parentElement.removeChild(node);
-    countNodeChange(-1);
-  }
   
   DynamicBind(node, {
     ".toggle": {
       event: "click",
-      func: function(e) {
-        toggleItem(node, e.target.checked);
-      }
+      func: toggleItem
     },
     ".destroy": {
       event: "click",
@@ -253,4 +265,6 @@ var newItem = function(data) {
     }
   });
   return node;
-}})();
+}
+
+})();
